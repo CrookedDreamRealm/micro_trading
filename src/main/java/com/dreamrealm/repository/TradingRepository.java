@@ -12,4 +12,7 @@ public interface TradingRepository extends MongoRepository<TradingDTO, String> {
 
     @Query(value="{messageId:'?0'}", fields="{'offer' : 1, 'status' : 1}")
     List<TradingDTO> findAll(String messageId);
+
+    @Query(value="{userId:'?0'}", fields="{'userId' : 1, 'offer' : 1, 'status' : 1}")
+    List<TradingDTO> findAllByUserId(String messageId);
 }

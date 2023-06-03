@@ -1,8 +1,12 @@
 package com.dreamrealm.controller;
 
 import com.dreamrealm.logic.TradingLogic;
+import com.dreamrealm.model.Offer;
 import com.dreamrealm.model.Trading;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,15 +14,25 @@ import javax.validation.Valid;
 import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
-@RequestMapping("/api/trading")
+@RequestMapping(value = "/api/trading", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+@Slf4j
 @RestController
 public class TradingController {
+    private final RabbitTemplate rabbitTemplate;
+
+    public TradingController (RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
     @Autowired
     TradingLogic tradingLogic;
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public ResponseEntity<?> get(){
-        return ResponseEntity.ok().body("test");
+
+    @RequestMapping(value = "/test", method = RequestMethod.POST)
+    public ResponseEntity<?> sendMessenger(@RequestBody Offer offer){
+        log.info("Received request to create offer: {}", offer);
+        rabbitTemplate.convertAndSend("", "q.offer", offer);
+        return ResponseEntity.ok().body(offer);
     }
 
     @RequestMapping(value = "/addTrade", method = RequestMethod.POST)

@@ -2,8 +2,11 @@ package com.dreamrealm.DTO;
 
 import lombok.Getter;
 import lombok.Setter;
-import nonapi.io.github.classgraph.json.Id;
+
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -11,7 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class TradingDTO {
     @Id
     private String id;
-
+    private String userId;
     private String messageId;
     private String offer;
     private String status;
