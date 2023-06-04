@@ -32,8 +32,24 @@ public class RabbitMqConfig {
     }
 
     @Bean
+    public Queue createReadOfferRegistrationQueue() {
+        return QueueBuilder.durable("q.readOffer")
+                .withArgument("x-dead-letter-exchange","x.registration-failure")
+                .withArgument("x-dead-letter-routing-key","fall-back")
+                .build();
+    }
+
+    @Bean
     public Queue createInfoMessageRegistrationQueue() {
         return QueueBuilder.durable("q.deleteInfoMessage")
+                .withArgument("x-dead-letter-exchange","x.registration-failure")
+                .withArgument("x-dead-letter-routing-key","fall-back")
+                .build();
+    }
+
+    @Bean
+    public Queue createReadDatabaseRegistrationQueue() {
+        return QueueBuilder.durable("q.deleteReadInfoTrade")
                 .withArgument("x-dead-letter-exchange","x.registration-failure")
                 .withArgument("x-dead-letter-routing-key","fall-back")
                 .build();

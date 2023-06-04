@@ -32,6 +32,7 @@ public class TradingController {
     public ResponseEntity<?> sendMessenger(@RequestBody Offer offer){
         log.info("Received request to create offer: {}", offer);
         rabbitTemplate.convertAndSend("", "q.offer", offer);
+        rabbitTemplate.convertAndSend("", "q.readOffer", offer);
         return ResponseEntity.ok().body(offer);
     }
 
