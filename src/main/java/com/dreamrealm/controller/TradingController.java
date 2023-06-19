@@ -3,6 +3,8 @@ package com.dreamrealm.controller;
 import com.dreamrealm.logic.TradingLogic;
 import com.dreamrealm.model.Offer;
 import com.dreamrealm.model.Trading;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +31,12 @@ public class TradingController {
     TradingLogic tradingLogic;
 
     @RequestMapping(value = "/test", method = RequestMethod.POST)
-    public ResponseEntity<?> sendMessenger(@RequestBody Offer offer){
+    public ResponseEntity<?> sendMessenger(@RequestBody Offer offer) throws JsonProcessingException {
         log.info("Received request to create offer: {}", offer);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(offer);
         rabbitTemplate.convertAndSend("", "q.offer", offer);
-        rabbitTemplate.convertAndSend("", "q.readOffer", offer);
+        rabbitTemplate.convertAndSend("", "q.readOffer", json);
         return ResponseEntity.ok().body(offer);
     }
 
